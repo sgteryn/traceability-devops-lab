@@ -12,7 +12,64 @@
 <body>
   <h1>Can't Get Enough Sweets & Treats</h1>
   <h2>Just the SWEET you need</h2>
-  <button>What satisfies your sweet tooth?</button>
+  <form>
+    <input type='text' placeholder='What satisfies your sweet tooth?' />
+    <button>ADD YOUR SWEET FAVORITE SWEET TREAT</button>
+</form>
+  <section></section>
+  <script>
+    const addForm = document.querySelector('form');
+        const nameInput = document.querySelector('input');
+        const container = document.querySelector('section');
+
+             function sweetsInTheView(res) {
+            container.innerHTML = ''
+            sweetInput.value = ''
+
+            res.data.forEach((sweetItem, index) => {
+                container.innerHTML += `<p sweet=${index}>${sweetItem}</p>`
+            })
+
+            document.querySelectorAll('p').forEach(element => {
+                const theIndexValue = element.getAttribute('sweet');
+
+                element.addEventListener('click', () => {
+                    axios
+                        .delete(`/api/sweets/${theIndexValue}`)
+                        .then(res => {
+                            sweetsInTheView(res)
+                        })
+                })
+            })
+        }
+
+        function submitHandler(evt) {
+            evt.preventDefault();
+
+            axios
+                .post('/api/sweets', { sweet: sweetInput.value })
+                .then(res => {
+                    sweetsInTheView(res)
+                })
+                .catch(err => {
+                    sweetInput.value = ''
+
+                    const notif = document.createElement('aside')
+                    notif.innerHTML = `<p>${err.response.data}</p>
+                    <button class="close">close</button>`
+                    document.body.appendChild(notif)
+
+                    document.querySelectorAll('.close').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            e.target.parentNode.remove()
+                        })
+                    })
+                })
+        }
+
+        addForm.addEventListener('submit', submitHandler)
+
+  </script>
 
 </body>
 </html>
